@@ -1,0 +1,312 @@
+0.0 - 8.0 |  Hello, my name is Jeff Messier. I'm a professor in electrical and software engineering in the Schulick School of Engineering at the University of Calgary.
+8.0 - 19.0 |  And this is the introduction to my lecture series on computer organization, computer architecture.
+19.0 - 27.0 |  And so this is a class that I teach at the second year undergraduate engineering level.
+27.0 - 31.0 |  And it's basically where we learn how a computer works.
+31.0 - 35.0 |  Now, most people have some idea of how computers work.
+35.0 - 41.0 |  If you've built your own computer, you know what a CPU is or what RAM does.
+41.0 - 44.0 |  But this is where we really dive into the details.
+44.0 - 56.0 |  We literally pull the top off of the CPU integrated circuit and see exactly how you build a computer from basic logic gates.
+56.0 - 68.0 |  And essentially what this class does is it fills in the gap between knowledge of, you know, basic logic gates and gates or gates flip-flops and software.
+68.0 - 73.0 |  So, at a very low level, you've got transistors, silicon, basic logic gates.
+73.0 - 79.0 |  At a higher level, you've got, you know, programming language like C or Python.
+79.0 - 89.0 |  And we're basically going to fill in the gap. We're going to explain how to create a digital design that can run software.
+89.0 - 95.0 |  And so doing, we will know how a computer works by the end of the course.
+95.0 - 101.0 |  Now, this lecture series is meant to be part of my undergraduate class.
+101.0 - 110.0 |  And if you are just, if you're not in that class and you're just following along on the internet just for, for interest's sake,
+110.0 - 118.0 |  you will find this class most useful if you have at least some understanding of basic digital logic design.
+118.0 - 122.0 |  And by that I mean, and gates, or gates and flip-flops.
+122.0 - 126.0 |  And that's basically where sort of one starting point for the course.
+126.0 - 130.0 |  And also a basic understanding of programming.
+130.0 - 133.0 |  In particular, an understanding of C is, is very helpful.
+133.0 - 140.0 |  So, if you've got those two things, you'll be able to get the most out of this, out of this course.
+140.0 - 146.0 |  So, anyway, let's dive into it and start sort of talking about how we're going to approach this problem.
+146.0 - 151.0 |  So, in some ways, this is a very easy class to teach.
+151.0 - 160.0 |  Because unlike some other electrical engineering courses where you're introducing sort of concepts and things that people aren't familiar with,
+160.0 - 162.0 |  everybody knows what a computer is.
+162.0 - 167.0 |  So, obviously, we use computers everywhere multiple times a day.
+167.0 - 174.0 |  And the experience that most of us have with computers is something I'm going to call the user's perspective.
+174.0 - 180.0 |  And the user's perspective is just simply that, making use of a computer in our daily lives.
+180.0 - 183.0 |  And obviously, this can take many forms.
+183.0 - 193.0 |  So, the original kind of user perspective, at least for the masses, was the personal computer.
+193.0 - 199.0 |  And so, this was started to become more of a normal thing.
+199.0 - 208.0 |  Let's say, kind of late 80s, early 90s, where we, where people started to bring computers into their home.
+208.0 - 210.0 |  And this continues to this day.
+210.0 - 222.0 |  And so, the personal computer or laptop, we have some box, I guess, or some component that we imagine representing the computer.
+222.0 - 227.0 |  With the personal computer, this is sort of like the main computer tower.
+227.0 - 232.0 |  And then we connect a series of things into this computer that allow us to make use of it.
+232.0 - 237.0 |  For example, we will connect a screen into the computer.
+237.0 - 242.0 |  And that allows us to, or that allows the computer to display information for us.
+242.0 - 250.0 |  We connect a keyboard to the computer.
+250.0 - 257.0 |  And that allows us to send input into the computer, send it commands.
+257.0 - 260.0 |  The same thing with a mouse or a trackpad.
+260.0 - 270.0 |  And, you know, we might have probably a set of speakers also connected to the computer.
+270.0 - 275.0 |  And, again, for the sort of the desktop personal computer, these are discrete components.
+275.0 - 281.0 |  For the laptop, these are all sort of integrated into one kind of package.
+281.0 - 286.0 |  But we sort of understand that all these things are connected to something we refer to as a computer.
+286.0 - 288.0 |  And I'll even put that in quotes.
+288.0 - 295.0 |  Another very common way that we interact with computers is using smartphones.
+295.0 - 303.0 |  So, again, inside a smartphone, we understand that there's some kind of device.
+303.0 - 305.0 |  Let's call it a computer.
+305.0 - 312.0 |  And with a smartphone, again, the main way we interact with a smartphone is through a screen.
+312.0 - 322.0 |  Rather than just being an output device, like it is on most personal computers, a screen takes, gives both output to the user, but also accepts input.
+322.0 - 330.0 |  So, all smartphones these days have touch sensitive screens that we can manipulate.
+330.0 - 334.0 |  There's a speaker, again, to get sound out.
+334.0 - 343.0 |  And, there's a microphone to get sound into the computer.
+343.0 - 348.0 |  There's also a camera, which is a big one.
+348.0 - 353.0 |  Another way we interact with computers these days is when we drive a car.
+353.0 - 361.0 |  So, most cars, again, whoops.
+361.0 - 367.0 |  Have something inside them that we would refer to as the computer.
+367.0 - 379.0 |  We then interact with this computer, not directly by typing something into it, like we would with, you know, a personal computer.
+379.0 - 391.0 |  But, this computer would monitor the input from the steering wheel.
+391.0 - 396.0 |  It might monitor input from the pedals.
+396.0 - 404.0 |  And, it would give us information through various display devices.
+404.0 - 412.0 |  These could be the gauges, they could be the kind of flat screen display that you see in most cars these days.
+412.0 - 416.0 |  And, it could be things like warning lights or alarms.
+416.0 - 433.0 |  And, so, one of the things that you would have probably noticed throughout these past three examples is that most of the users perspective, it's kind of focused on something that we call input output or I-O devices.
+433.0 - 440.0 |  Now, I-O devices are basically used by the computer to either receive information from the outside world, which is the input.
+440.0 - 446.0 |  So, it's going into the computer, or to provide information to the outside world throughout the output.
+446.0 - 449.0 |  So, it's coming out of the computer.
+449.0 - 457.0 |  And, so, when we think about it, it's really this I-O interface that the user kind of focuses on.
+457.0 - 464.0 |  This is where we sort of- this is where the plane of interaction is with our computer.
+464.0 - 467.0 |  But, that's really where the understanding for most people stop.
+467.0 - 474.0 |  So, we know that there is a quote unquote computer inside these things, but we don't really know how that computer works.
+474.0 - 478.0 |  But, that's basically what we're going to be talking about in this class.
+478.0 - 486.0 |  So, the purpose of this class is to really understand what goes on inside this kind of quote unquote computer box.
+486.0 - 495.0 |  And, we're going to be talking about sort of the- the marriage or the interaction of two devices or two sort of concepts.
+495.0 - 498.0 |  One is the concept of the computer hardware.
+498.0 - 500.5 |  This is the physical construction of a computer.
+500.5 - 506.5 |  So, we're going to be diving deep into the- into this kind of computer box.
+506.5 - 515.5 |  We're going to rip off the lid and we're going to look at how you literally build a computer using very basic fundamental digital logic gates.
+515.5 - 528.5 |  However, you can't understand how a computer is designed from a hardware point of view with also understanding how software runs on a computer at a very low level.
+528.5 - 532.5 |  And so, it's impossible to sort of separate the concepts of hardware and software.
+532.5 - 534.5 |  You have to talk about both together.
+534.5 - 537.5 |  And that's going to be one theme for this- this lecture series.
+537.5 - 544.5 |  And so, for now, we'll refer to software as the programs or apps that we run on the computer that basically define its behavior.
+544.5 - 550.5 |  And so, the nice thing about computers is that we can use them for lots of different things.
+550.5 - 557.5 |  So, your smartphone has a whole bunch of apps that allow you to use it to play games or visit with a friend or watch a movie.
+557.5 - 572.5 |  And it's the concept of having a bunch of different programs that we can run on basically a common hardware platform that is one of the really powerful things about what we're going to be talking about in this course.
+572.5 - 581.5 |  The next perspective that many of you will also have regarding using a computer is the programmer's perspective.
+581.5 - 594.5 |  And if you are watching this lecture series or taking the course that I'm teaching, it's probably because you are in an engineering program or maybe a computer science program.
+594.5 - 601.5 |  And you have already likely gone through some sort of introductory courses, maybe in your first year, where you've learned how to program.
+601.5 - 604.5 |  And many of you will have known how to program long before you came to university.
+604.5 - 612.5 |  So, it's very common now for kids to grow up going to programming camps and start to learn how to program really at a very young age.
+612.5 - 618.5 |  And the programmer's perspective is essentially using a computer to develop software.
+618.5 - 623.5 |  And this is typically in what we are going to refer to as a high level language.
+623.5 - 630.5 |  And so some common high level languages are C, Python is something that most people are a lot of people are familiar with.
+630.5 - 633.5 |  JavaScript, Java.
+633.5 - 644.5 |  These are the languages that you sort of type into a computer in a fairly high level interface and it generates a program that does something for you.
+644.5 - 649.5 |  Often a video game or perhaps a web server or web service.
+649.5 - 664.5 |  And basically software development is done in some kind of programming environment that takes the code that you write, the actual commands that you write in Python or C and translates that into a working program.
+664.5 - 679.5 |  And, you know, for many forms of software development, maybe in your own personal experience up until now, you know, you've been able to probably develop a lot of software without really understanding how a computer does what it does.
+679.5 - 689.5 |  You know, you can particularly if you're programming like a game, for example, you can type in a bunch of commands to make your video game, do a certain thing and it'll run on your computer.
+689.5 - 704.5 |  And as long as you aren't pushing your computer too hard or doing very high end graphics, you can sort of type in your commands and just let the game render on your screen without worrying about too much about what's going on under the hood.
+704.5 - 710.5 |  Another perspective we can take on a computer is something I'm going to refer to as the silicon perspective.
+710.5 - 722.5 |  And most people have heard of the idea that computers are implemented using very small devices that are created on chips made of silicon.
+722.5 - 729.5 |  And of course, these devices are transistors and maybe you've even seen pictures that look like this.
+729.5 - 732.5 |  This is a picture of what's known as a wafer.
+732.5 - 751.5 |  And on a wafer, there are a number of microchips created in rows and these wafers are chopped up into square pieces and the chips are put into packages and then put on circuit boards to create computers and other digital devices.
+751.5 - 760.5 |  And so we talk about how computers are made up of billions and billions of transistors.
+760.5 - 774.5 |  So for example, the Apple A13 processor contains 8.5 billion transistors, just a massive number and each transistor is only seven nanometers wide, which is the width of 14 atoms.
+774.5 - 793.5 |  So if you're kind of a computer enthusiast or you've listened to people talk about computers, you may have received this perspective as well, this sort of abstract notion that we make computers out of billions of tiny transistors on silicon and the transistors are ridiculously small.
+793.5 - 807.5 |  And this is typically when people sort of speak of computers in this way, it's also still very abstract like we can kind of appreciate these general concepts, but it doesn't really help us understand how computers actually work.
+807.5 - 818.5 |  And so the fun thing about teaching this course is this is really where I get to help you bridge that gap.
+818.5 - 832.5 |  So once you're done taking this class, you will be able to bridge the gap between the programmers perspective, which is a very high level perspective, you know, you're typing something in Python and maybe you're playing a game.
+832.5 - 846.5 |  And you'll be able to understand how we can go from that perspective all the way down to this idea of, you know, transistors created billions of tiny transistors created on a silicon chip.
+846.5 - 853.5 |  So you've already most likely in your program started to bridge this gap already.
+853.5 - 868.5 |  So this class assumes that you've taken some sort of basic digital logic class where you've talked about the idea of basic logic gates, not gates and gates or gates and so on.
+868.5 - 875.5 |  And you would have talked about how individual transistors can be used to create these basic logic functions.
+875.5 - 886.5 |  Most likely you've also talked a little bit about how to create circuits with memory, for example, using flip flops that can store and remember a certain state.
+886.5 - 901.5 |  And you would have seen how to design how to sort of assemble flip flops to create what are known as state machines that change their digital state based on input from from the user or the outside environment.
+901.5 - 930.5 |  And, you know, I suppose once you've done, once you're done taking a class like that, you can kind of appreciate how this could be, you know, how these concepts could be sort of a computer, but it would still be in very heavy quotation marks because, you know, it's kind of hard to go from, you know, an eight state, state machine using D flip flops all the way up to, you know, somebody writing a program in Python.
+930.5 - 949.5 |  And so again, the purpose of this class is really to help sort of start from this digital logic gate understanding and create a structure that can run software that can really be written to perform any sequence of commands that the programmer wants.
+950.5 - 968.5 |  Okay, so now I'd like to talk about a new or different computer perspective and that's the micro architecture perspective and this is the perspective actually that we're going to be introducing and working with in this course and it is will likely be new to most of you.
+968.5 - 979.5 |  So, first of all, a micro architecture is basically refers to the digital blocks that we implement in silicon to build a computer.
+979.5 - 984.5 |  So, these are the digital blocks that we're going to put together that we'll be able to run software.
+984.5 - 1007.5 |  And a micro architecture as we're going to see executes a series of low level instructions called machine language instructions and part of what we're going to be talking about in future modules is also how a high level language like Python or C gets translated into these low level machine language instructions.
+1007.5 - 1024.5 |  And when we talk about instructions set architecture, basically the instructions that architecture are all the different machine language instructions that can be run on a particular micro architecture.
+1025.5 - 1046.5 |  When you create a micro architecture, you simultaneously also create a library of commands or a group of machine language commands that can run on that micro architecture and different micro architectures will have a different set of commands that they can run.
+1046.5 - 1054.5 |  And so, when we talk about instructions at architecture, sometimes we just refer to that as architecture for short.
+1054.5 - 1063.5 |  And architecture is also a word that we use to refer to different families of processor or different families of micro architecture.
+1063.5 - 1079.5 |  And so, some of the very common examples that you would have most likely heard of are the x86 family of micro architecture or architecture family.
+1079.5 - 1091.5 |  And this was, this architecture was originally developed by Intel and it makes up most of the processors that we use today on PCs and laptops.
+1091.5 - 1095.5 |  So this includes the i5 and i7 family of processors.
+1095.5 - 1102.5 |  And you'll notice that I'm using the term processor and micro architecture kind of interchangeably.
+1102.5 - 1112.5 |  So a processor is another word that we sometimes use to refer to, again, the digital blocks that exist on a silicon chip that can run software.
+1112.5 - 1120.5 |  Another processor family that's very important is the advanced risk machine or arm architecture.
+1120.5 - 1126.5 |  And arms are the most widely used architecture in the world to date by some estimates.
+1126.5 - 1130.5 |  They're used now in personal computers.
+1130.5 - 1135.5 |  So, for example, the new Apple laptops are based on an arm architecture.
+1135.5 - 1139.5 |  They're also very commonly used in smartphones.
+1139.5 - 1151.5 |  And finally, another architecture example is AVR, which, you know, there's no official sort of definition for what AVR stands for.
+1151.5 - 1157.5 |  But it's commonly accepted to stand for alpha and vergards reduced instruction set computer.
+1157.5 - 1172.5 |  Basically, the AVR is a little microcontroller that we are going to be working with in this class to get some hands-on experience with working with low level, a low level computer design.
+1172.5 - 1184.5 |  And the AVR architecture is what we're going to actually be using throughout this lecture series as an example architecture as we build up our micro architecture from scratch.
+1184.5 - 1193.5 |  The AVR family of chips are most commonly known as the microcontroller family that are used by Arduino.
+1193.5 - 1200.5 |  So if you've used an Arduino, you've used a microcontroller from the AVR family.
+1200.5 - 1204.5 |  And so let's dive into micro architecture design.
+1204.5 - 1216.5 |  So I'm going to start by writing or drawing an extremely high-level picture of a micro architecture.
+1216.5 - 1223.5 |  Our micro architecture is going to have what I'm going to refer to as a processor.
+1223.5 - 1228.5 |  This is the brain, if you like, of our micro architecture.
+1228.5 - 1235.5 |  This is where the calculations are done and where decisions are made.
+1235.5 - 1252.5 |  We also need to be able to store our program that we want to run on the processor as well as be able to store some of the intermediate or final values that are generated by the processor's calculations.
+1252.5 - 1254.5 |  And we're going to do that with memory.
+1254.5 - 1259.5 |  And memory again is a very familiar idea for people who work with computers.
+1259.5 - 1268.5 |  Of course, the hard drive on your computer is a form of memory, RAM inside your computer is a form of memory as well.
+1268.5 - 1281.5 |  And we're going to connect for now the memory on the processor together with just a bi-directional arrow indicating that information flows from memory to the processor and back in the other direction.
+1281.5 - 1286.5 |  And this connection I'm going to refer to as a bus.
+1286.5 - 1296.5 |  And so a bus refers to the electrical connections that exist between the components of our micro architecture.
+1296.5 - 1302.5 |  And these electrical connections, you know, sometimes we even refer to them as wires.
+1302.5 - 1316.5 |  But in reality, they are little incredibly thin strips of metal that are laid down on the silicon chip where we're implementing the rest of our micro architecture.
+1316.5 - 1324.5 |  And finally, the last high level block is our
+1325.5 - 1328.5 |  input-output devices or our IO devices.
+1328.5 - 1333.5 |  This is how our computer interacts with the rest of the world.
+1333.5 - 1335.5 |  It accepts input from the world.
+1335.5 - 1339.5 |  Maybe we're talking about a keyboard or a mouse.
+1339.5 - 1351.5 |  This could also be, you know, a sensor perhaps that maybe a little micro controller is sampling as part of an Internet of Things application.
+1351.5 - 1355.5 |  And output devices, of course, can be the screens of our computer.
+1355.5 - 1369.5 |  But they could also be things like a flashing LED to indicate an alarm condition or a motor, a servo motor that moves in response to some sort of condition.
+1369.5 - 1376.5 |  And so with this, you know, high level discussion, we've defined already a number of terms.
+1376.5 - 1383.5 |  So first of all, processor is the act of block of the computer that's responsible for following the instructions that make up a program.
+1383.5 - 1392.5 |  So a program is basically just a series of instructions and the processor implements or executes those instructions.
+1392.5 - 1397.5 |  Memory is where programs and data are stored.
+1397.5 - 1405.5 |  IO, we've already defined as any interface or device used to send information into the computer or to get information out of the computer.
+1405.5 - 1416.5 |  The bus consists of one or more wires that can run in parallel and carry information between our micro architecture components.
+1416.5 - 1424.5 |  Again, the buses are sometimes literally external connections consisting of actual wires.
+1424.5 - 1435.5 |  But most of the buses we talk about in this class will be implemented using just very narrow traces of metal laid down on the silicon chip itself.
+1435.5 - 1446.5 |  Microprocessors, and you're going to hear me sometimes use the term microprocessor and sometimes the term microcontroller.
+1446.5 - 1456.5 |  And these are kind of squishy definitions. I mean, you'll hear people sort of throw these words around to refer to like a variety of different things.
+1456.5 - 1472.5 |  But in this course, the distinction we're going to make is a microprocessor is a chip that is supported by several other external chips when used as part of a computer.
+1472.5 - 1488.5 |  So a microprocessor, for example, might contain just the processor block of our micro architecture and then perhaps the memory blocks are located within external devices.
+1488.5 - 1497.5 |  And so a great example of this again is the personal computer where you've got your CPU, which we would refer to as our microprocessor.
+1497.5 - 1509.5 |  It might have a little bit of memory inside it, but also the RAM would be an external chip that plugs into your motherboard and the hard drive would be an external device that also plugs into your motherboard.
+1509.5 - 1526.5 |  In contrast, a microcontroller you can think of as basically a one chip computer. So it's a single integrated circuit that contains the processor, the memory, the IO devices, everything you need all contained in one little chip.
+1526.5 - 1536.5 |  And the microcontroller that we're going to be focusing on in this class is one of the AVR microcontrollers.
+1536.5 - 1555.5 |  And we're going to be using it both for our hands-on work in the labs of this course, but also we're going to basically build that sort of the internals of that AVR microcontroller as we move through the different modules of this course.
+1555.5 - 1567.5 |  And just to expand a little bit more on the idea of buses, so buses are digital connections between the functional blocks of our micro architecture.
+1567.5 - 1576.5 |  And we refer to buses as sometimes being serial buses and sometimes being parallel buses.
+1576.5 - 1585.5 |  And for a serial bus, one bit of information is transmitted at a time over a single wire.
+1585.5 - 1592.5 |  So if we're sending a byte of information, we transmit each bit one at a time over a single wire.
+1592.5 - 1607.5 |  Now, often people will think of a serial bus as consisting of just a single wire, but usually there's other wires in parallel with that wire that help carry things like clock or control signals.
+1607.5 - 1624.5 |  And so most serial buses will consist of a single wire for carrying serial data, plus another wire perhaps for a clock, plus maybe one or two more wires for control information.
+1624.5 - 1638.5 |  So a parallel bus consists of several parallel wires that carry several bits in parallel several different bits in parallel simultaneously.
+1638.5 - 1650.5 |  So yeah, so parallel bus carries several is one that carries several bits in parallel, and so you can send a bunch of bits simultaneously and usually implemented using several parallel wires.
+1650.5 - 1670.5 |  When I'm drawing a parallel bus in the diagrams in this class, I suppose one way I could do it is if we had an eight bit parallel bus, I could draw one, two, three, four, five, six, seven, eight individual wires, but that gets pretty clumsy.
+1670.5 - 1687.5 |  So what I'm going to do instead is I'm going to draw a thick wire and then to indicate how many parallel wires make up the bus, I'll just do a slash and then I'll write a number indicating that this is an eight bit parallel bus.
+1687.5 - 1695.5 |  A single digital line I'm going to draw with a slightly thinner line.
+1695.5 - 1704.5 |  So what I want to do is now talk a little bit more about the AVR micro architecture that we are going to be focusing on in this class.
+1704.5 - 1717.5 |  And the AVR chip that we're going to be working with is what's known as a Harvard micro architecture and a Harvard micro architecture separates instruction memory from data memory.
+1717.5 - 1723.5 |  And so instruction memory is where our program is stored.
+1723.5 - 1734.5 |  As the name suggests, this is the series of machine language instructions generated from our program that are fed into the processor and executed by the processor.
+1734.5 - 1740.5 |  Separate from instruction memory is a second memory block that we're going to refer to as data memory.
+1740.5 - 1743.5 |  Data memory is basically for storing variables.
+1743.5 - 1754.5 |  So if you're doing calculations and you need to store intermediate values and variables, that's what is done in the data memory.
+1754.5 - 1762.5 |  And finally, we have one more block for our IO devices.
+1762.5 - 1770.5 |  Here's the functional block diagram of the AVR 128 DB 28 micro controller.
+1770.5 - 1776.5 |  This is microprocessor, but really it should be micro controller because this is a one chip computer.
+1776.5 - 1783.5 |  You give 3.3 volts to this chip and it has everything inside it to completely run a program.
+1783.5 - 1797.5 |  And so I'm not at this point going to dive into what all of these blocks are necessarily other than to point out the big sort of pieces or functional components.
+1797.5 - 1801.5 |  So up here we have the CPU.
+1801.5 - 1804.5 |  This is basically our processor block.
+1804.5 - 1808.5 |  Over here we have our flash memory.
+1808.5 - 1811.5 |  That's basically our instruction memory.
+1811.5 - 1814.5 |  We've got some SRAM over here.
+1814.5 - 1815.5 |  That's our data memory.
+1815.5 - 1821.5 |  And then we have a whole bunch of IO devices.
+1821.5 - 1828.5 |  Now, IO for a microcontroller like this is a little different than IO for a laptop.
+1828.5 - 1835.5 |  So you're not going to see an HDMI port for a screen on a simple device like this.
+1835.5 - 1839.5 |  You're not going to see a USB port for a keyboard.
+1839.5 - 1847.5 |  But instead we have things like analog to digital converters, digital to analog converters.
+1847.5 - 1851.5 |  We have a series of timers.
+1851.5 - 1856.5 |  We have a UART for sending serial information.
+1856.5 - 1863.5 |  We have two other kinds of serial buses.
+1863.5 - 1867.5 |  And we have some onboard opamps.
+1867.5 - 1871.5 |  And we also have a whole bunch of general purpose digital IO.
+1871.5 - 1876.5 |  And so this is how we're going to be using these chips to interact with the real world.
+1876.5 - 1880.5 |  And so we're going to be diving into this microcontroller and getting to know it in two ways.
+1880.5 - 1886.5 |  In our hands-on exercises, we're going to be using this as part of a design.
+1886.5 - 1887.5 |  You're going to get one of these chips.
+1887.5 - 1889.5 |  You're going to pop it down on a breadboard.
+1889.5 - 1893.5 |  And we're going to be using it to play music.
+1893.5 - 1896.5 |  We're going to be using it to control a servo motor.
+1896.5 - 1899.5 |  We're going to be using it to read switches.
+1899.5 - 1909.5 |  And so with our hands-on exercises, we're going to get to know the input output capabilities of this device.
+1909.5 - 1917.5 |  In the theoretical part of the course where we talk about the theory of micro architecture design,
+1917.5 - 1928.5 |  we are basically going to build these three blocks from basic digital logic gates and flip-flops.
+1928.5 - 1934.5 |  So we're going to build this a design for this chip, sort of from the inside out.
+1934.5 - 1940.5 |  And then we're going to use the finished design in actual hands-on circuits.
+1940.5 - 1946.5 |  So I'd like to finish up this intro module by talking about a few more kind of high-level concepts
+1946.5 - 1953.5 |  and some terminology to better put what we're going to be talking about into context.
+1953.5 - 1959.5 |  The first thing I want to talk about is this notion of specialized versus generalized computing.
+1959.5 - 1969.5 |  So typically, we say that a microprocessor or microcontroller or micro architecture is an example of generalized computing.
+1969.5 - 1971.5 |  What do we mean by that?
+1971.5 - 1975.5 |  Basically, a micro architecture is a digital design.
+1975.5 - 1979.5 |  So it's built up of AND gates or gates flip-flops.
+1979.5 - 1985.5 |  But what you make it do can be changed not by changing the silicon itself,
+1985.5 - 1991.5 |  but by changing the program that you load into the instruction memory of your device.
+1991.5 - 1998.5 |  And so the actions taken by the processor depend on the instruction stored in memory.
+1998.5 - 2003.5 |  And this is something that's known as the stored program concept.
+2003.5 - 2012.5 |  So what your processor actually does depends on the program that you have, that it's storing.
+2012.5 - 2018.5 |  And this almost seems like an obvious statement.
+2018.5 - 2020.5 |  It's like a wall of course.
+2020.5 - 2023.5 |  You program a computer to do something different and it does something different.
+2023.5 - 2026.5 |  But not all digital designs are like this.
+2026.5 - 2032.5 |  And so some digital circuits are designed to do only one job.
+2032.5 - 2039.5 |  And these are specialized digital designs that do things like, for example,
+2039.5 - 2047.5 |  the chip that takes information and transmits it over an Ethernet port, for example.
+2047.5 - 2053.5 |  Or the chip that receives Wi-Fi signals and decodes the Wi-Fi signals.
+2053.5 - 2056.5 |  Those are designs that can do only one thing.
+2056.5 - 2061.5 |  So you can't, for example, reprogram a Wi-Fi chip to play a game.
+2061.5 - 2066.5 |  It contains a whole bunch of digital structures that have some flexibility,
+2066.5 - 2069.5 |  but basically they're designed to do only one thing.
+2069.5 - 2075.5 |  Specialized circuits tend to be implemented first on field programmable gate arrays or FPGAs.
+2075.5 - 2080.5 |  This is something that you'll be learning about later on in our program in a different class.
+2080.5 - 2086.5 |  And once you have this design sort of implemented and tested on an FPGA,
+2086.5 - 2091.5 |  it's usually migrated to something called an application specific integrated circuit or ASIC.
+2091.5 - 2101.5 |  And this is just a whole bunch of chips that are stamped out with very specialized static digital designs on them.
+2101.5 - 2110.5 |  These kinds of ASICs are very fast, they're very cheap, and they're very power efficient.
+2110.5 - 2113.5 |  However, they are not very versatile.
+2113.5 - 2121.5 |  Again, once you build a chip to decode Wi-Fi signals, that chip can basically only do one thing.
+2121.5 - 2130.5 |  So there are some examples of devices that incorporate ideas from both generalized and specialized computing.
+2130.5 - 2140.5 |  A great example is the graphical processing unit or GPU devices or chips.
+2140.5 - 2152.5 |  So GPUs, most people know, are the specialized high-speed chips that exist inside video cards in order to accelerate the rendering of graphics, particularly for games.
+2152.5 - 2165.5 |  And if you look at the design of a GPU, it consists of a whole bunch of parallel processors connected to high-speed memory that are basically designed to do a good job of rendering polygons,
+2165.5 - 2170.5 |  because most sort of 3D-type-looking games are created from polygons.
+2170.5 - 2181.5 |  And that was the original design for GPUs, but it turns out that this sort of parallel processing sort of GPU design
+2181.5 - 2188.5 |  is good for a bunch of other problems as well, for example, Bitcoin mining or training machine learning algorithms.
+2188.5 - 2197.5 |  And GPUs, even though they have this sort of specialized digital design, they still use the stored program model.
+2197.5 - 2207.5 |  So you can still write different programs to load GPU memory with different types of data, ask the processors to perform different types of operations on that data,
+2207.5 - 2212.5 |  that aren't necessarily graphics-related.
+2212.5 - 2218.5 |  And so another example are DSPs or digital signal processors.
+2218.5 - 2235.5 |  So DSP chips, again, have a bunch of kind of specialized digital designs or cores within the chip that are meant to accelerate things like free transforms or filtering operations,
+2235.5 - 2238.5 |  but they still use the stored program model.
+2238.5 - 2246.5 |  So you still write a program for these things, and the program determines what data is fed into this special digital design,
+2246.5 - 2251.5 |  and to a certain extent what operations are performed on the data.
+2251.5 - 2256.5 |  Now, finally, I also wanted to talk about the terms embedded design and firmware.
+2256.5 - 2266.5 |  And because in many ways, what we're going to be learning in our hands on, in the hands-on part of this course, could be thought of as embedded design.
+2266.5 - 2279.5 |  So an embedded system to start out with, an embedded system is a computer that is embedded into a sort of larger design that does a very specific job.
+2279.5 - 2296.5 |  So it still is a computer, it uses the stored program model, it's a generalized computing device where we could change what it does based on just sort of changing the program.
+2296.5 - 2307.5 |  However, we then take that computer, and typically these are microcontrollers, we then take that microcontroller and put it in a design that really kind of constrains what we can do with it.
+2307.5 - 2314.5 |  So a great example is the microcontrollers that are embedded in automobiles.
+2314.5 - 2318.5 |  And so microcontrollers are put in automobiles.
+2318.5 - 2322.5 |  These microcontrollers, again in theory, could be programmed to do anything at all.
+2322.5 - 2334.5 |  But then we put them inside an engine, and we connect the microcontroller to fuel injector controllers and sensors in the car.
+2334.5 - 2346.5 |  And so while in theory we could reprogram that microcontroller to do something that isn't car related, it doesn't really make sense because the thing is literally buried into a car and it's only connected to automobile parts.
+2346.5 - 2357.5 |  And so that's what we refer to as an embedded design, and the software that we write for these embedded devices we refer to as firmware.
+2357.5 - 2366.5 |  And firmware is typically software that's written for very sort of low level microcontroller type devices.
+2366.5 - 2378.5 |  And the reason why we call it firm rather than soft is because it is possible to change it, but it's not as easy to change it as it is to change a program running on a laptop, for example.
+2378.5 - 2389.5 |  And this is because in an embedded design again, these computers are placed into a very sort of specialized design.
+2389.5 - 2403.5 |  We can change the software running on the devices, but there's a lot of constraints based on the fact that this thing exists in a very sort of specific type design application.
+2404.5 - 2428.5 |  Microcontrollers are typically the devices that are used for embedded design, and so the programming that we're going to be doing in this class could be seen or is seen by many or would be considered by many as firmware development rather than software development, even though we are going to be writing all our programs and see which you can use for just regular software as well.
+2428.5 - 2436.5 |  So just to wrap up to reiterate, our goal is basically to learn how a computer works in air quotes, right?
+2436.5 - 2443.5 |  And again, a lot of people think they know how a computer works, but typically don't sort of go to the level that we're going to be discussing in this class.
+2443.5 - 2457.5 |  And by, you know, if I were to define for the purposes of this class, understanding how a computer works, it basically means we are going to learn how to take a high level programming language,
+2457.5 - 2466.5 |  like see and convert it or translate it down into low level binary machine language instructions that a micro architecture can understand.
+2466.5 - 2468.5 |  So that'll be the first step.
+2468.5 - 2480.5 |  And then we are going to talk about how to design the digital logic structures that are going to execute these low level machine language instructions.
+2480.5 - 2488.5 |  And finally, we're going to talk a little bit about how a micro architecture design can be enhanced to improve performance.
+2488.5 - 2498.5 |  So much of this course is going to be designing a very basic micro architecture that can run machine language, but does it in a relatively inefficient way.
+2498.5 - 2513.5 |  And then we're going to be the we're going to talk about things like caching and pipelining, and which are things that are done by most modern micro processors and micro controllers in order to speed things up or improve performance.
+2513.5 - 2526.5 |  And by the end of this course, we will have bridge the gap between, you know, the high level program and the basic digital logic gates that you would have learned about in a previous course.
+2526.5 - 2536.5 |  So that's why I'm really excited about this class. I really think that that's that's a cool thing to or that's a really cool space to work in, right.
+2536.5 - 2543.5 |  So finally, we get to connect those last two dots you've learned how to program you've learned what logic gates are all about.
+2543.5 - 2549.5 |  Now let's join the two together and build a computer.
