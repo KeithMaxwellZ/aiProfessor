@@ -104,7 +104,7 @@ class VideoLearningSystem:
     def play_video(self):
         """Play video with automatic pausing at key points"""
         import Video
-        
+
         # Update the pause_times in Video.py
         Video.pause_times = self.pause_points
         
@@ -113,7 +113,7 @@ class VideoLearningSystem:
 
 
 # Initialize the system with a video
-learning_system = VideoLearningSystem("Video.mp4")
+learning_system = VideoLearningSystem("data/Video.mp4")
 
 # Process the video (generates transcript, summary, and quiz)
 config = learning_system.process_video()
