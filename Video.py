@@ -33,7 +33,7 @@ def is_near_pause_point(current_time, pause_times, threshold=0.1):
     return any(abs(current_time - pause_time) < threshold for pause_time in pause_times)
 
 # Load the video
-video_path = "Video.mp4"
+video_path = "data/Video.mp4"
 cap = cv2.VideoCapture(video_path)
 
 # Get audio player for the video

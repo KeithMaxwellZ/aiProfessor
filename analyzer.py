@@ -18,6 +18,10 @@ def load_model(model_size: str = DEFAULT_MODEL_SIZE):
 
 
 def analyze(file_name: str, raw=True):
+    if os.path.isfile(f"./data/{file_name}.out"):
+        with open(f"./data/{file_name}.out", 'r') as out:
+            summary_text = out.read()
+            return summary_text
     global model
     if model is None:
         logging.info("Model not loaded, initializing...")
@@ -33,7 +37,10 @@ def analyze(file_name: str, raw=True):
                 pl.append(f"{round(i.start, 4)} - {round(i.end, 4)} | {i.text}")
                 segment_dur = round(i.end - i.start, 2)
                 pbar.update(segment_dur)
-        return "\n".join(pl)
+        summary_text = "\n".join(pl)
+        with open(f"./data/{file_name}.out", 'w') as out:
+            out.write(summary_text)
+        return summary_text
         # if raw:
         #     return segments
         # else:
