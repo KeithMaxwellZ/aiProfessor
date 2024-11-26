@@ -89,7 +89,9 @@ def generate_multiple_choice(summary: str, num_questions: int = 5) -> List[Dict]
     return questions
 
 
-def generate_true_false(summary: str, num_questions: int = 5) -> List[Dict]:
+def generate_true_false(filename: str, num_questions: int = 5) -> List[Dict]:
+    with open(filename, 'r') as f:
+        summary = f.read()
     questions = []
     # Implementation for true/false questions
     for i in range(num_questions):

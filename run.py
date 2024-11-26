@@ -1,30 +1,40 @@
-import logging
-
-from flask import Flask, request, Response
-from flask_cors import CORS
+import json
 
 from analyzer import analyze
 from ProjectExceptions import *
 
 import logging
-from typing import Optional
-from urllib.parse import urlparse, parse_qs
 
 from flask import Flask, request, Response, render_template_string
+from flask_cors import CORS
+
 import yt_dlp
 import validators
+
+from chatgpt import generateSummary, generate_true_false
 
 app = Flask(__name__)
 CORS(app)
 
 TARGET_FILE: str = None
 
+with open("./data/video_db.json", "r") as f:
+    video_db = json.load(f)
+
+def download_video(video_url: str):
+    # Assume we did something here
+    global TARGET_FILE
+    TARGET_FILE = video_db[video_url]
+    print(video_url)
+    pass
+
+
 @app.route("/upload", methods=['POST'])
 def upload():
-    global TARGET_FILE
-    file = request.form.get("filename")
-    ext = request.form.get("ext")
-    TARGET_FILE = f"{file}.{ext}"
+    lnk = request.form.get("link")
+    print(lnk)
+    print(request.form)
+    download_video(lnk)
     return "Success"
 
 @app.route('/')
@@ -255,7 +265,7 @@ def watch_video():
         logging.error(f"Error processing video: {str(e)}")
         return Response(f"Error processing video: {str(e)}", status=500)
 
-@app.route("/download", methods=['POST'])
+@app.route("/transcript", methods=['POST'])
 def download():
     get_raw = request.form.get("raw")
     if get_raw.lower() == "false":
@@ -273,6 +283,21 @@ def download():
         response.data = "No video uploaded"
         response.status_code = 502
 
+    return response
+
+
+@app.route("/summary", methods=['GET'])
+def summary():
+    res = generateSummary(f"data/{TARGET_FILE}.out", raw=False)
+    response = Response()
+    response.data = json.dumps(res)
+    return response
+
+@app.route("/quiz", methods=['GET'])
+def quiz():
+    res = generate_true_false(f"data/{TARGET_FILE}.out")
+    response = Response()
+    response.data = json.dumps(res)
     return response
 
 
