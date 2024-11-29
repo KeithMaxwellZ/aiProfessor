@@ -31,7 +31,8 @@ else:
 def download_video(video_url: str):
     # Remove unnecessary params
     pos = video_url.find("&")
-    video_url = video_url[0:pos]
+    if pos != -1:
+        video_url = video_url[0:pos]
 
     # Download the video
     global TARGET_FILE
@@ -322,10 +323,14 @@ def summary():
 
 @app.route("/quiz", methods=['GET'])
 def quiz():
-    res = generate_true_false(f"data/{TARGET_FILE}.out")
+    res = generate_true_false(f"data/{TARGET_FILE}")
     response = Response()
     response.data = json.dumps(res)
     return response
 
 
 app.run(host="0.0.0.0", port=20000)
+
+# curl 127.0.0.1:20000/upload --data-urlencode link=https://www.youtube.com/watch?v=Onf7AKGHBzg
+# curl 127.0.0.1:20000/transcript --data raw=False
+# curl 127.0.0.1:20000/summary
