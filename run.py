@@ -21,12 +21,29 @@ TARGET_FILE: str = None
 with open("./data/video_db.json", "r") as f:
     video_db = json.load(f)
 
+
 def download_video(video_url: str):
-    # Assume we did something here
+    # Remove unnecessary params
+    pos = video_url.find("&")
+    video_url = video_url[0:pos]
+
+    # Download the video
     global TARGET_FILE
-    TARGET_FILE = video_db[video_url]
     print(video_url)
-    pass
+    if video_url in video_db:
+        TARGET_FILE = video_db[video_url]
+    else:
+        opt = {
+            "outtmpl": "./data/%(title)s.mp4"
+        }
+        with yt_dlp.YoutubeDL(opt) as ydl:
+            info = ydl.extract_info(video_url, download=True)
+            video_db[video_url] = info['title']
+
+        with open(f"./data/video_db.json", "w") as f:
+            json.dump(video_db, f, indent=4)
+
+    return
 
 
 @app.route("/upload", methods=['POST'])
@@ -36,6 +53,7 @@ def upload():
     print(request.form)
     download_video(lnk)
     return "Success"
+
 
 @app.route('/')
 def home():
@@ -153,19 +171,20 @@ def home():
     """
     return render_template_string(html_template)
 
+
 # LOOK HERE KEITH!
 @app.route("/video", methods=['POST'])
 def watch_video():
     vidURL = request.form.get("vidURL")
-    
+
     # CASE 0: URL not entered in.
     if not vidURL:
         return Response("No yt video URL provided", status=400)
-    
+
     # CASE 1: Invalid URL.
     if not validators.url(vidURL):
         return Response("Invalid URL format", status=400)
-    
+
     # CASE 2: Valid URL.
     try:
         # Configure yt-dlp
@@ -173,15 +192,15 @@ def watch_video():
             'format': 'best',
             'extract_flat': True,
         }
-        
+
         # Extract video information
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(vidURL, download=False)
-            
+
         # Get video details
         video_title = info.get('title', 'Video')
         video_id = info.get('id', '')
-        
+
         if 'youtube.com' in vidURL or 'youtu.be' in vidURL:
             html_template = """
             <!DOCTYPE html>
@@ -251,19 +270,20 @@ def watch_video():
             </body>
             </html>
             """
-            
+
             return render_template_string(
                 html_template,
                 video_title=video_title,
                 video_id=video_id
             )
-            
+
         else:
             return Response("Only YouTube videos are supported at this time", status=400)
-            
+
     except Exception as e:
         logging.error(f"Error processing video: {str(e)}")
         return Response(f"Error processing video: {str(e)}", status=500)
+
 
 @app.route("/transcript", methods=['POST'])
 def download():
@@ -293,6 +313,7 @@ def summary():
     response.data = json.dumps(res)
     return response
 
+
 @app.route("/quiz", methods=['GET'])
 def quiz():
     res = generate_true_false(f"data/{TARGET_FILE}.out")
@@ -301,4 +322,6 @@ def quiz():
     return response
 
 
-app.run(host="0.0.0.0", port=20000)
+# app.run(host="0.0.0.0", port=20000)
+
+download_video("https://www.youtube.com/watch?v=ozj4T5M5GTk&ab_channel=KitchenNightmares")
