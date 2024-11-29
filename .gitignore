@@ -1,3 +1,5 @@
 /.venv/
-/data/sample*
+/data/*.mp4
+/data/*.mp4.out
 /info.json
+/data/video_db.json
