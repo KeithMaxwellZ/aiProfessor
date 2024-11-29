@@ -1,4 +1,5 @@
 import json
+import os.path
 
 from analyzer import analyze
 from ProjectExceptions import *
@@ -18,8 +19,13 @@ CORS(app)
 
 TARGET_FILE: str = None
 
-with open("./data/video_db.json", "r") as f:
-    video_db = json.load(f)
+video_db = {}
+if os.path.isfile("./data/video_db.json"):
+    with open("./data/video_db.json", "r") as f:
+        video_db = json.load(f)
+else:
+    with open("./data/video_db.json", "w") as f:
+        json.dump(video_db, f)
 
 
 def download_video(video_url: str):
@@ -322,6 +328,4 @@ def quiz():
     return response
 
 
-# app.run(host="0.0.0.0", port=20000)
-
-download_video("https://www.youtube.com/watch?v=ozj4T5M5GTk&ab_channel=KitchenNightmares")
+app.run(host="0.0.0.0", port=20000)
