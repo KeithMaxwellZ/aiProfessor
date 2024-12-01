@@ -138,6 +138,7 @@ def generate_true_false(target_file: str) -> List[Dict]:
                 match_res = re.search(expr, str(gpt_res.choices[0].message.content))
 
                 question = {
+                    "timestamp": t_end,
                     "type": "true_false",
                     "question": match_res.group(1),
                     "correct_answer": match_res.group(2)
