@@ -6,5 +6,5 @@
 myenv
 /data/video_db.json
 /frames/*.png
-/temp/*.*
+/temp/*.jpg
 /detected_slide_area_histogram.png
