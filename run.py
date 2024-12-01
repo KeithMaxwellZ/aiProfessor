@@ -64,7 +64,7 @@ def upload():
     response = Response()
     response.status_code = 200
     response.data = json.dumps({"file_name": f_name})
-
+    response.headers.add("Access-Control-Allow-Origin", "*")
     return response
 
 
@@ -182,21 +182,26 @@ def home():
     </body>
     </html>
     """
-    return render_template_string(html_template)
+    response = Response(html_template, status=200)
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
 
 
-# LOOK HERE KEITH!
 @app.route("/video", methods=['POST'])
 def watch_video():
     vidURL = request.form.get("vidURL")
 
     # CASE 0: URL not entered in.
     if not vidURL:
-        return Response("No yt video URL provided", status=400)
+        response = Response("No yt video URL provided", status=400)
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response
 
     # CASE 1: Invalid URL.
     if not validators.url(vidURL):
-        return Response("Invalid URL format", status=400)
+        response = Response("Invalid URL format", status=400)
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response
 
     # CASE 2: Valid URL.
     try:
@@ -284,18 +289,24 @@ def watch_video():
             </html>
             """
 
-            return render_template_string(
+            response = render_template_string(
                 html_template,
                 video_title=video_title,
                 video_id=video_id
             )
+            response.headers.add("Access-Control-Allow-Origin", "*")
+            return response
 
         else:
-            return Response("Only YouTube videos are supported at this time", status=400)
+            response = Response("Only YouTube videos are supported at this time", status=400)
+            response.headers.add("Access-Control-Allow-Origin", "*")
+            return response
 
     except Exception as e:
         logging.error(f"Error processing video: {str(e)}")
-        return Response(f"Error processing video: {str(e)}", status=500)
+        response = Response(f"Error processing video: {str(e)}", status=500)
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response
 
 
 @app.route("/transcript", methods=['POST'])
@@ -316,6 +327,7 @@ def download():
         response.data = "No video uploaded"
         response.status_code = 502
 
+    response.headers.add("Access-Control-Allow-Origin", "*")
     return response
 
 
@@ -324,6 +336,7 @@ def summary():
     res = generateSummary(f"{TARGET_FILE}", raw=False)
     response = Response()
     response.data = json.dumps(res)
+    response.headers.add("Access-Control-Allow-Origin", "*")
     return response
 
 
@@ -332,11 +345,9 @@ def quiz():
     res = generate_true_false(f"{TARGET_FILE}")
     response = Response()
     response.data = json.dumps(res)
+    response.headers.add("Access-Control-Allow-Origin", "*")
     return response
 
 
-app.run(host="0.0.0.0", port=20000)
-
-# curl 127.0.0.1:20000/upload --data-urlencode link=https://www.youtube.com/watch?v=Onf7AKGHBzg
-# curl 127.0.0.1:20000/transcript --data raw=False
-# curl 127.0.0.1:20000/summary
+if __name__ == '__main__':
+    app.run(host="0.0.0.0", port=20000)

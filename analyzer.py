@@ -11,10 +11,10 @@ model: WhisperModel = None
 DEFAULT_MODEL_SIZE = "tiny.en"
 
 
-def load_model(model_size: str = DEFAULT_MODEL_SIZE):
-    global model
-    logging.info(f"Loading model {model_size}")
-    model = WhisperModel(model_size, device='cuda', compute_type="float32")
+def load_model():
+    model_size = "medium"
+    model = WhisperModel(model_size, device='cpu', compute_type="float32")
+    return model
 
 
 def analyze(file_name: str, raw=True):
