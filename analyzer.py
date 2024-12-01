@@ -14,7 +14,7 @@ DEFAULT_MODEL_SIZE = "tiny.en"
 def load_model(model_size: str = DEFAULT_MODEL_SIZE):
     global model
     logging.info(f"Loading model {model_size}")
-    model = WhisperModel(model_size, device='cuda', compute_type="float32")
+    model = WhisperModel(model_size, device='cpu', compute_type="float32")
 
 
 def analyze(file_name: str, raw=True):
@@ -78,11 +78,11 @@ def proc(raw_dict) -> str:
 
 
 if __name__ == '__main__':
-    res = analyze("Owner Snaps At Waitress For Telling The Truth ｜ Kitchen Nightmares FULL EPISODE")
+    # res = analyze("Owner Snaps At Waitress For Telling The Truth ｜ Kitchen Nightmares FULL EPISODE")
     # with open("transcript_sample.txt", 'w') as f:
     #     f.write(res)
-    file_name = "Gordon Baffled By 'Thin Crust Pizza' ｜ Kitchen Nightmares FULL EPISODE.mp4"
-    p = f"./data/{file_name}"
+    file_name = "Computer Architecture Lecture 1: Introduction"
+    p = f"./data/{file_name}.mp4"
     print(p)
-    r = os.path.isfile(f"./data/{file_name}")
+    r = os.path.isfile(f"./data/c 1.mp4")
     print(r)

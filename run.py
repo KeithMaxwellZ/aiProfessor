@@ -41,11 +41,16 @@ def download_video(video_url: str):
         TARGET_FILE = video_db[video_url]
     else:
         opt = {
-            "outtmpl": "./data/%(title)s.mp4"
+            "outtmpl": {}
         }
         with yt_dlp.YoutubeDL(opt) as ydl:
-            info = ydl.extract_info(video_url, download=True)
-            video_db[video_url] = info['title']
+            info = ydl.extract_info(video_url, download=False)
+            title = info['title']
+            proc_title = "".join(filter(str.isalpha, title))
+            video_db[video_url] = proc_title
+            print(proc_title)
+            ydl.params['outtmpl']['default'] = f'./data/{proc_title}.mp4'
+            ydl.download(video_url)
 
         with open(f"./data/video_db.json", "w") as f:
             json.dump(video_db, f, indent=4)
