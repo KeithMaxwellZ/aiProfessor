@@ -1,3 +1,4 @@
+import base64
 import json
 import random
 import re
@@ -23,7 +24,7 @@ def generateSummary(target_file: str, raw=True):
     content = ("Summarize the following transcript from a lecture with bulletin points "
                "and reference to timestamps using the following format, "
                "skip segments with length less than 60 seconds  \n"
-               "** {start time} - {end time}: {main topic}**\n"
+               "** {start time} - {end time}/ {main topic}**\n"
                "- {subtopic 1}\n"
                "- {subtopic 2}\n"
                "- {subtopic 3}\n")
@@ -70,10 +71,10 @@ def generateSummary(target_file: str, raw=True):
                     }
             elif i.startswith("**"):
                 temp = i.replace("*", "")
-                segments = temp.split(":")
+                segments = temp.split("/")
                 times = segments[0].split("-")
-                pl["time_start"] = times[0].replace(" ", "")
-                pl["time_end"] = times[1].replace(" ", "")
+                pl["time_start"] = times[0].replace(" ", "").replace(":", ".")
+                pl["time_end"] = times[1].replace(" ", "").replace(":", ".")
                 pl["main_topic"] = segments[1]
 
                 process_video_pipeline(
@@ -87,11 +88,14 @@ def generateSummary(target_file: str, raw=True):
                     noise_tolerance=2
                 )
 
-                pl["key_frame_img"] = f'frames/{target_file}_{times[0]}.png',
+                with open(f"./frames/{target_file}_{times[0]}.png", "rb") as image_file:
+                    encoded_string = base64.b64encode(image_file.read())
+                pl["key_frame_img"] = str(encoded_string)[2:-1]
             else:
                 pl["subtopics"].append(i[1:])
 
         with open(f"{transcript_file_path}.sum", "w") as fl:
+            print(res)
             json.dump(res, fl, indent=4)
         return res
 
