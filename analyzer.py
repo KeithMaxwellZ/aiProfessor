@@ -45,6 +45,7 @@ def analyze(file_name: str, raw=True):
         logging.info("Target file found, ")
         segments, info = model.transcribe(f"./data/{file_name}.mp4", beam_size=5)
         pl = []
+        txt = []
         t_dur = round(info.duration, 2)
         with tqdm(total=t_dur, unit="seconds") as pbar:
             for i in segments:
@@ -54,10 +55,10 @@ def analyze(file_name: str, raw=True):
                     "line_text": i.text
                 }
                 pl.append(line)
-                pl.append(f"{round(i.start, 4)} - {round(i.end, 4)} | {i.text}")
+                txt.append(f"{round(i.start, 4)} - {round(i.end, 4)} | {i.text}")
                 segment_dur = round(i.end - i.start, 2)
                 pbar.update(segment_dur)
-        summary_text = "\n".join(pl)
+        summary_text = "\n".join(txt)
         with open(f"./data/{file_name}.mp4.out", 'w') as out:
             out.write(summary_text)
         return pl
