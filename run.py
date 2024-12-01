@@ -1,4 +1,5 @@
 import json
+import os.path
 
 from analyzer import analyze
 from ProjectExceptions import *
@@ -18,15 +19,40 @@ CORS(app)
 
 TARGET_FILE: str = None
 
-with open("./data/video_db.json", "r") as f:
-    video_db = json.load(f)
+video_db = {}
+if os.path.isfile("./data/video_db.json"):
+    with open("./data/video_db.json", "r") as f:
+        video_db = json.load(f)
+else:
+    with open("./data/video_db.json", "w") as f:
+        json.dump(video_db, f)
+
 
 def download_video(video_url: str):
-    # Assume we did something here
+    # Remove unnecessary params
+    pos = video_url.find("&")
+    if pos != -1:
+        video_url = video_url[0:pos]
+
+    # Download the video
     global TARGET_FILE
-    TARGET_FILE = video_db[video_url]
     print(video_url)
-    pass
+    if video_url in video_db:
+        TARGET_FILE = video_db[video_url]
+    else:
+        opt = {
+            "outtmpl": "./data/%(title)s.mp4"
+        }
+        with yt_dlp.YoutubeDL(opt) as ydl:
+            info = ydl.extract_info(video_url, download=True)
+            video_db[video_url] = info['title']
+
+        with open(f"./data/video_db.json", "w") as f:
+            json.dump(video_db, f, indent=4)
+
+        TARGET_FILE = video_db[video_url]
+
+    return TARGET_FILE
 
 
 @app.route("/upload", methods=['POST'])
@@ -34,8 +60,13 @@ def upload():
     lnk = request.form.get("link")
     print(lnk)
     print(request.form)
-    download_video(lnk)
-    return "Success"
+    f_name = download_video(lnk)
+    response = Response()
+    response.status_code = 200
+    response.data = json.dumps({"file_name": f_name})
+
+    return response
+
 
 @app.route('/')
 def home():
@@ -153,19 +184,20 @@ def home():
     """
     return render_template_string(html_template)
 
+
 # LOOK HERE KEITH!
 @app.route("/video", methods=['POST'])
 def watch_video():
     vidURL = request.form.get("vidURL")
-    
+
     # CASE 0: URL not entered in.
     if not vidURL:
         return Response("No yt video URL provided", status=400)
-    
+
     # CASE 1: Invalid URL.
     if not validators.url(vidURL):
         return Response("Invalid URL format", status=400)
-    
+
     # CASE 2: Valid URL.
     try:
         # Configure yt-dlp
@@ -173,15 +205,15 @@ def watch_video():
             'format': 'best',
             'extract_flat': True,
         }
-        
+
         # Extract video information
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(vidURL, download=False)
-            
+
         # Get video details
         video_title = info.get('title', 'Video')
         video_id = info.get('id', '')
-        
+
         if 'youtube.com' in vidURL or 'youtu.be' in vidURL:
             html_template = """
             <!DOCTYPE html>
@@ -251,19 +283,20 @@ def watch_video():
             </body>
             </html>
             """
-            
+
             return render_template_string(
                 html_template,
                 video_title=video_title,
                 video_id=video_id
             )
-            
+
         else:
             return Response("Only YouTube videos are supported at this time", status=400)
-            
+
     except Exception as e:
         logging.error(f"Error processing video: {str(e)}")
         return Response(f"Error processing video: {str(e)}", status=500)
+
 
 @app.route("/transcript", methods=['POST'])
 def download():
@@ -277,7 +310,7 @@ def download():
         logging.warning("File not selected")
     try:
         res = analyze(TARGET_FILE, raw=get_raw)
-        response.data = str(res)
+        response.data = json.dumps(res)
         response.status_code = 200
     except VideoNotFound:
         response.data = "No video uploaded"
@@ -288,17 +321,22 @@ def download():
 
 @app.route("/summary", methods=['GET'])
 def summary():
-    res = generateSummary(f"data/{TARGET_FILE}.out", raw=False)
+    res = generateSummary(f"{TARGET_FILE}", raw=False)
     response = Response()
     response.data = json.dumps(res)
     return response
 
+
 @app.route("/quiz", methods=['GET'])
 def quiz():
-    res = generate_true_false(f"data/{TARGET_FILE}.out")
+    res = generate_true_false(f"{TARGET_FILE}")
     response = Response()
     response.data = json.dumps(res)
     return response
 
 
 app.run(host="0.0.0.0", port=20000)
+
+# curl 127.0.0.1:20000/upload --data-urlencode link=https://www.youtube.com/watch?v=Onf7AKGHBzg
+# curl 127.0.0.1:20000/transcript --data raw=False
+# curl 127.0.0.1:20000/summary

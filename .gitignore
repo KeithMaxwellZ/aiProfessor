@@ -1,4 +1,10 @@
 /.venv/
-/data/sample*
+/data/*.mp4
+/data/*.out
+/data/*.sum
 /info.json
 myenv
+/data/video_db.json
+/frames/*.png
+/temp/*.*
+/detected_slide_area_histogram.png

@@ -1,10 +1,13 @@
 import json
 import random
+import re
 from pprint import pprint
 from typing import List, Dict
 
 from openai import OpenAI
 from openai.types.chat.chat_completion import Choice
+
+from temp import process_video_pipeline
 
 with open("info.json") as f:
     tres = json.load(f)
@@ -16,12 +19,16 @@ client = OpenAI(
 )
 
 
-def generateSummary(transcript_file_path: str, raw=True):
-    content = ("Summarize the following transcript from a lecture with bulletin points and reference to timestamps using the following format \n"
+def generateSummary(target_file: str, raw=True):
+    content = ("Summarize the following transcript from a lecture with bulletin points "
+               "and reference to timestamps using the following format, "
+               "skip segments with length less than 60 seconds  \n"
                "** {start time} - {end time}: {main topic}**\n"
                "- {subtopic 1}\n"
                "- {subtopic 2}\n"
                "- {subtopic 3}\n")
+    video_file_path = f"data/{target_file}.mp4"
+    transcript_file_path = f"data/{target_file}.out"
     with open(transcript_file_path, 'r') as f:
         t = f.read()
     content += t
@@ -45,6 +52,7 @@ def generateSummary(transcript_file_path: str, raw=True):
             "main_topic": "",
             "time_start": "",
             "time_end": "",
+            "key_frame_img": None,
             "subtopics": []
         }
         ctx = c.message.content
@@ -57,18 +65,34 @@ def generateSummary(transcript_file_path: str, raw=True):
                         "main_topic": "",
                         "time_start": "",
                         "time_end": "",
+                        "key_frame_img": None,
                         "subtopics": []
                     }
             elif i.startswith("**"):
                 temp = i.replace("*", "")
                 segments = temp.split(":")
                 times = segments[0].split("-")
-                pl["time_start"] = times[0]
-                pl["time_end"] = times[1]
+                pl["time_start"] = times[0].replace(" ", "")
+                pl["time_end"] = times[1].replace(" ", "")
                 pl["main_topic"] = segments[1]
+
+                process_video_pipeline(
+                    video_path=video_file_path,
+                    start_time=float(times[0]),
+                    end_time=float(times[1]),
+                    output_video_path=f'data/{target_file}_cut.mp4',
+                    frame_output_dir=r'./frames',
+                    longest_still_frame_path=f'frames/{target_file}_{times[0]}.png',
+                    change_threshold=0.1,
+                    noise_tolerance=2
+                )
+
+                pl["key_frame_img"] = f'frames/{target_file}_{times[0]}.png',
             else:
                 pl["subtopics"].append(i[1:])
 
+        with open(f"{transcript_file_path}.sum", "w") as fl:
+            json.dump(res, fl, indent=4)
         return res
 
 
@@ -89,18 +113,59 @@ def generate_multiple_choice(summary: str, num_questions: int = 5) -> List[Dict]
     return questions
 
 
-def generate_true_false(filename: str, num_questions: int = 5) -> List[Dict]:
-    with open(filename, 'r') as f:
-        summary = f.read()
-    questions = []
+def generate_true_false(target_file: str) -> List[Dict]:
+    trc_file = f"./data/{target_file}.out"
+    summary_file = f"./data/{target_file}.out.sum"
+    with open(summary_file, "r") as f:
+        summary = json.load(f)
+    trc = []
+    with open(trc_file, "r") as f:
+        t = f.readline()
+        while t != "":
+            print(t)
+            temp1 = t.split("|")
+            temp2 = temp1[0].split("-")
+            trc.append((float(temp2[0]), float(temp2[1]), temp1[1]))
+            t = f.readline()
     # Implementation for true/false questions
-    for i in range(num_questions):
-        question = {
-            "type": "true_false",
-            "question": f"True/False question {i + 1} based on the summary",
-            "correct_answer": random.choice([True, False])
-        }
-        questions.append(question)
+    questions = []
+    for entry in summary:
+        t_end = float(entry["time_end"])
+        t_start = float(entry["time_start"])
+        if t_end - t_start > 30:
+            pl = []
+            for l in trc:
+                if t_start < l[0] < t_end:
+                    pl.append(l[2])
+            proc = '\n'.join(pl)
+            content = (f"Generate a True/False question about the topic based on the following transcript "
+                       f"in the following format: Format: **Question** -> --Answer--\n "
+                       f"Transcript: \n {proc}")
+            gpt_res = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "system", "content": "You are a professor in an University"},
+                    {
+                        "role": "user",
+                        "content": content
+                    }
+                ]
+            )
+
+            try:
+                expr = r"\*\*(.*)\*\* -> --(.*)--"
+                match_res = re.search(expr, str(gpt_res.choices[0].message.content))
+
+                question = {
+                    "timestamp": t_end,
+                    "type": "true_false",
+                    "question": match_res.group(1),
+                    "correct_answer": match_res.group(2)
+                }
+                questions.append(question)
+            except:
+                continue
+
     return questions
 
 
@@ -128,5 +193,5 @@ List[Dict]:
 
 
 if __name__ == '__main__':
-    res = generateSummary("transcript_sample.txt", raw=False)
-    pprint(res)
+    tf_quiz = generate_true_false("sample3.mp4")
+    print(tf_quiz)
