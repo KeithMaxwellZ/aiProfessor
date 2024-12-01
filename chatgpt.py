@@ -7,6 +7,8 @@ from typing import List, Dict
 from openai import OpenAI
 from openai.types.chat.chat_completion import Choice
 
+from temp import process_video_pipeline
+
 with open("info.json") as f:
     tres = json.load(f)
 key = tres["gpt-key"]
@@ -17,7 +19,7 @@ client = OpenAI(
 )
 
 
-def generateSummary(transcript_file_path: str, raw=True):
+def generateSummary(target_file: str, raw=True):
     content = ("Summarize the following transcript from a lecture with bulletin points "
                "and reference to timestamps using the following format, "
                "skip segments with length less than 60 seconds  \n"
@@ -25,6 +27,8 @@ def generateSummary(transcript_file_path: str, raw=True):
                "- {subtopic 1}\n"
                "- {subtopic 2}\n"
                "- {subtopic 3}\n")
+    video_file_path = f"data/{target_file}.mp4"
+    transcript_file_path = f"data/{target_file}.out"
     with open(transcript_file_path, 'r') as f:
         t = f.read()
     content += t
@@ -48,6 +52,7 @@ def generateSummary(transcript_file_path: str, raw=True):
             "main_topic": "",
             "time_start": "",
             "time_end": "",
+            "key_frame_img": None,
             "subtopics": []
         }
         ctx = c.message.content
@@ -60,15 +65,29 @@ def generateSummary(transcript_file_path: str, raw=True):
                         "main_topic": "",
                         "time_start": "",
                         "time_end": "",
+                        "key_frame_img": None,
                         "subtopics": []
                     }
             elif i.startswith("**"):
                 temp = i.replace("*", "")
                 segments = temp.split(":")
                 times = segments[0].split("-")
-                pl["time_start"] = times[0]
-                pl["time_end"] = times[1]
+                pl["time_start"] = times[0].replace(" ", "")
+                pl["time_end"] = times[1].replace(" ", "")
                 pl["main_topic"] = segments[1]
+
+                process_video_pipeline(
+                    video_path=video_file_path,
+                    start_time=float(times[0]),
+                    end_time=float(times[1]),
+                    output_video_path=f'data/{target_file}_cut.mp4',
+                    frame_output_dir=r'./frames',
+                    longest_still_frame_path=f'frames/{target_file}_{times[0]}.png',
+                    change_threshold=0.1,
+                    noise_tolerance=2
+                )
+
+                pl["key_frame_img"] = f'frames/{target_file}_{times[0]}.png',
             else:
                 pl["subtopics"].append(i[1:])
 

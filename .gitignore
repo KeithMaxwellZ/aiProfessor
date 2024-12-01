@@ -4,3 +4,5 @@
 /data/*.sum
 /info.json
 /data/video_db.json
+/frames/*.png
+/temp/*.*

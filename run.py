@@ -50,7 +50,9 @@ def download_video(video_url: str):
         with open(f"./data/video_db.json", "w") as f:
             json.dump(video_db, f, indent=4)
 
-    return
+        TARGET_FILE = video_db[video_url]
+
+    return TARGET_FILE
 
 
 @app.route("/upload", methods=['POST'])
@@ -58,8 +60,12 @@ def upload():
     lnk = request.form.get("link")
     print(lnk)
     print(request.form)
-    download_video(lnk)
-    return "Success"
+    f_name = download_video(lnk)
+    response = Response()
+    response.status_code = 200
+    response.data = json.dumps({"file_name": f_name})
+
+    return response
 
 
 @app.route('/')
@@ -304,7 +310,7 @@ def download():
         logging.warning("File not selected")
     try:
         res = analyze(TARGET_FILE, raw=get_raw)
-        response.data = str(res)
+        response.data = json.dumps(res)
         response.status_code = 200
     except VideoNotFound:
         response.data = "No video uploaded"
@@ -315,7 +321,7 @@ def download():
 
 @app.route("/summary", methods=['GET'])
 def summary():
-    res = generateSummary(f"data/{TARGET_FILE}.out", raw=False)
+    res = generateSummary(f"{TARGET_FILE}", raw=False)
     response = Response()
     response.data = json.dumps(res)
     return response
@@ -323,7 +329,7 @@ def summary():
 
 @app.route("/quiz", methods=['GET'])
 def quiz():
-    res = generate_true_false(f"data/{TARGET_FILE}")
+    res = generate_true_false(f"{TARGET_FILE}")
     response = Response()
     response.data = json.dumps(res)
     return response
