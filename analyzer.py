@@ -59,7 +59,7 @@ def analyze(file_name: str, raw=True):
                 segment_dur = round(i.end - i.start, 2)
                 pbar.update(segment_dur)
         summary_text = "\n".join(txt)
-        with open(f"./data/{file_name}.mp4.out", 'w') as out:
+        with open(f"./data/{file_name}.out", 'w') as out:
             out.write(summary_text)
         return pl
         # if raw:
