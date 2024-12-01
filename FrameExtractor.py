@@ -162,13 +162,14 @@ def process_video_pipeline(video_path, start_time, end_time, output_video_path, 
 
 
 # Example usage
-process_video_pipeline(
-    video_path=r'./data/sample3.mp4',
-    start_time=600,
-    end_time=900,
-    output_video_path=r'./data/sample3_cut.mp4',
-    frame_output_dir=r'./frames',
-    longest_still_frame_path=r'./data/sample3_longest.png',
-    change_threshold=0.1,
-    noise_tolerance=2
-)
+if __name__ == '__main__':
+    process_video_pipeline(
+        video_path=r'./data/sample3.mp4',
+        start_time=600,
+        end_time=900,
+        output_video_path=r'./data/sample3_cut.mp4',
+        frame_output_dir=r'./frames',
+        longest_still_frame_path=r'./data/sample3_longest.png',
+        change_threshold=0.1,
+        noise_tolerance=2
+    )
