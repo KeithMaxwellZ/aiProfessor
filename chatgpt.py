@@ -7,7 +7,7 @@ from typing import List, Dict
 from openai import OpenAI
 from openai.types.chat.chat_completion import Choice
 
-from temp import process_video_pipeline
+from FrameExtractor import process_video_pipeline
 
 with open("info.json") as f:
     tres = json.load(f)
