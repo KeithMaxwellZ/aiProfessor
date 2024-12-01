@@ -31,22 +31,77 @@ def generateSummary(target_file: str, raw=True):
     video_file_path = f"data/{target_file}.mp4"
     transcript_file_path = f"data/{target_file}.out"
     with open(transcript_file_path, 'r') as f:
-        transcript = f.read()
-    
-    segments = transcript.split('\n\n')
-    pl = []
-    for segment in segments:
-        lines = segment.split('\n')
-        if len(lines) < 2:
-            continue
-        pl.append({
-            "start_time": lines[0].split(' ')[0],
-            "end_time": lines[0].split(' ')[1],
-            "main_topic": lines[1],
-            "subtopics": lines[2:]
-        })
-    
-    return json.dumps(pl, indent=4)
+        t = f.read()
+    content += t
+    res = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": "You are a professor in an University"},
+            {
+                "role": "user",
+                "content": content
+            }
+        ]
+    )
+
+    c: Choice = res.choices[0]
+    if raw:
+        return c.message.content
+    else:
+        res = []
+        pl = {
+            "main_topic": "",
+            "time_start": "",
+            "time_end": "",
+            "key_frame_img": None,
+            "subtopics": []
+        }
+        ctx = c.message.content
+        for i in ctx.splitlines():
+            print(i)
+            if i is None or len(i) == 0:
+                if pl is not None:
+                    res.append(pl)
+                    pl = {
+                        "main_topic": "",
+                        "time_start": "",
+                        "time_end": "",
+                        "key_frame_img": None,
+                        "subtopics": []
+                    }
+            elif i.startswith("**"):
+                temp = i.replace("*", "")
+                segments = temp.split("/")
+                times = segments[0].split("-")
+                print(segments)
+                print(times)
+                pl["time_start"] = times[0].replace(" ", "").replace(":", ".")
+                pl["time_end"] = times[1].replace(" ", "").replace(":", ".")
+                pl["main_topic"] = segments[1]
+
+                process_video_pipeline(
+                    video_path=video_file_path,
+                    start_time=float(pl["time_start"]),
+                    end_time=float(pl["time_end"]),
+                    output_video_path=f'data/{target_file}_cut.mp4',
+                    frame_output_dir=r'./frames',
+                    longest_still_frame_path=f'frames/{target_file}_{times[0]}.png',
+                    change_threshold=0.1,
+                    noise_tolerance=2
+                )
+
+                with open(f"./frames/{target_file}_{times[0]}.png", "rb") as image_file:
+                    encoded_string = base64.b64encode(image_file.read())
+                pl["key_frame_img"] = str(encoded_string)[2:-1]
+            else:
+                pl["subtopics"].append(i[1:])
+
+        with open(f"{transcript_file_path}.sum", "w") as fl:
+            print(res)
+            json.dump(res, fl, indent=4)
+        return res
+
+
 
 
 def generate_multiple_choice(summary: str, num_questions: int = 5) -> List[Dict]:
