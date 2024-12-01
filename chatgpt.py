@@ -79,8 +79,8 @@ def generateSummary(target_file: str, raw=True):
 
                 process_video_pipeline(
                     video_path=video_file_path,
-                    start_time=float(times[0]),
-                    end_time=float(times[1]),
+                    start_time=float(pl["time_start"]),
+                    end_time=float(pl["time_end"]),
                     output_video_path=f'data/{target_file}_cut.mp4',
                     frame_output_dir=r'./frames',
                     longest_still_frame_path=f'frames/{target_file}_{times[0]}.png',
