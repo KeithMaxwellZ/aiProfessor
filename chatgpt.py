@@ -73,6 +73,8 @@ def generateSummary(target_file: str, raw=True):
                 temp = i.replace("*", "")
                 segments = temp.split("/")
                 times = segments[0].split("-")
+                print(segments)
+                print(times)
                 pl["time_start"] = times[0].replace(" ", "").replace(":", ".")
                 pl["time_end"] = times[1].replace(" ", "").replace(":", ".")
                 pl["main_topic"] = segments[1]
