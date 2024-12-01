@@ -1,0 +1,44 @@
+[
+    {
+        "timestamp": 95.0,
+        "type": "true_false",
+        "question": "True or False: The course focuses on the practical construction of a computer by exploring components like transistors and logic gates.",
+        "correct_answer": "True"
+    },
+    {
+        "timestamp": 550.5,
+        "type": "true_false",
+        "question": "The interaction of computer hardware and software can be understood separately without any issues.",
+        "correct_answer": "False"
+    },
+    {
+        "timestamp": 705.0,
+        "type": "true_false",
+        "question": "Programming is primarily conducted using low-level languages that interact directly with the hardware.",
+        "correct_answer": "False"
+    },
+    {
+        "timestamp": 1063.5,
+        "type": "true_false",
+        "question": "A micro architecture refers to the physical components of a computer rather than the digital blocks implemented in silicon.",
+        "correct_answer": "False"
+    },
+    {
+        "timestamp": 1369.5,
+        "type": "true_false",
+        "question": "The processor in a micro architecture is responsible for performing calculations and making decisions.",
+        "correct_answer": "True"
+    },
+    {
+        "timestamp": 1917.5,
+        "type": "true_false",
+        "question": "Instruction memory is used for storing variables, while data memory is used for storing machine language instructions.",
+        "correct_answer": "False"
+    },
+    {
+        "timestamp": 2378.5,
+        "type": "true_false",
+        "question": "The stored program concept allows for changes in the functionality of a processor by altering the physical silicon components.",
+        "correct_answer": "False"
+    }
+]
