@@ -10,7 +10,6 @@ from flask import Flask, request, Response, render_template_string
 from flask_cors import CORS
 
 import yt_dlp
-import validators
 
 from chatgpt import generateSummary, generate_true_false
 
@@ -41,6 +40,7 @@ def download_video(video_url: str):
         TARGET_FILE = video_db[video_url]
     else:
         opt = {
+            'format': 'best[ext=mp4]',
             "outtmpl": {}
         }
         with yt_dlp.YoutubeDL(opt) as ydl:
@@ -52,8 +52,8 @@ def download_video(video_url: str):
             ydl.params['outtmpl']['default'] = f'./data/{proc_title}.mp4'
             ydl.download(video_url)
 
-        with open(f"./data/video_db.json", "w") as f:
-            json.dump(video_db, f, indent=4)
+        with open(f"./data/video_db.json", "w") as db_f:
+            json.dump(video_db, db_f, indent=4)
 
         TARGET_FILE = video_db[video_url]
 
@@ -203,10 +203,10 @@ def watch_video():
         return response
 
     # CASE 1: Invalid URL.
-    if not validators.url(vidURL):
-        response = Response("Invalid URL format", status=400)
-        response.headers.add("Access-Control-Allow-Origin", "*")
-        return response
+    # if not validators.url(vidURL):
+    #     response = Response("Invalid URL format", status=400)
+    #     response.headers.add("Access-Control-Allow-Origin", "*")
+    #     return response
 
     # CASE 2: Valid URL.
     try:
